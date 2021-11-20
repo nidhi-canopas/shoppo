@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'category_screen.dart';
+import 'product_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,7 +43,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
 
   void _onIntroEnd(context) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => MyHomePage()),
+      MaterialPageRoute(builder: (_) => ProductScreen()),
     );
   }
 
@@ -205,7 +207,26 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Shoppo')),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text('Shoppo'),
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0, top: 8.0),
+            child: GestureDetector(
+              child: Stack(
+                alignment: Alignment.topCenter,
+                children: <Widget>[
+                  Icon(
+                    Icons.shopping_cart,
+                    size: 36.0,
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
       body: const Center(child: Text("This is the screen after Introduction")),
     );
   }
