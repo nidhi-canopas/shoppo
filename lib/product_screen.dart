@@ -16,13 +16,16 @@ class Product {
   final int id;
   final String title;
   final String image;
+
   // final Float price;
 
+  Product(this.id, this.title, this.image /*, this.price*/);
 
-  Product(this.id, this.title, this.image/*, this.price*/);
   factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(json["id"], json["title"], json["image"]/*, json["price"]*/);
+    return Product(
+        json["id"], json["title"], json["image"] /*, json["price"]*/);
   }
+
   static List<Product> parseList(List<dynamic> list) {
     return list.map((i) => Product.fromJson(i)).toList();
   }
@@ -41,7 +44,25 @@ class _ProductScreenState extends State<ProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Products')),
+      appBar: AppBar(
+        title: Text('Products'),
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0, top: 8.0),
+            child: GestureDetector(
+              child: Stack(
+                alignment: Alignment.topCenter,
+                children: <Widget>[
+                  Icon(
+                    Icons.shopping_cart,
+                    size: 36.0,
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
       body: getBody(),
       drawer: Drawer(
         // Add a ListView to the drawer. This ensures the user can scroll
@@ -56,22 +77,22 @@ class _ProductScreenState extends State<ProductScreen> {
               decoration: BoxDecoration(
                   color: Colors.blue,
                   image: DecorationImage(
-                      image: AssetImage("assets/logo.jpg"),
-                      fit: BoxFit.cover)
-              ),
+                      image: AssetImage("assets/logo.jpg"), fit: BoxFit.cover)),
             ),
             ListTile(
               title: const Text('Categories'),
               onTap: () {
                 // Navigate to categories
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => CategoryScreen()));
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => CategoryScreen()));
               },
             ),
             ListTile(
               title: const Text('Products'),
               onTap: () {
                 // Redirect to products
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProductScreen()));
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => ProductScreen()));
               },
             ),
             ListTile(
@@ -90,8 +111,7 @@ class _ProductScreenState extends State<ProductScreen> {
             ),
             ListTile(
               title: const Text('Home'),
-              onTap: () {
-              },
+              onTap: () {},
             ),
           ],
         ),
@@ -112,20 +132,24 @@ class _ProductScreenState extends State<ProductScreen> {
             title: Text(product.title),
             onTap: () {
               print("Product clicked");
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProductDetailScreen( product_id: product.id)));
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) =>
+                      ProductDetailScreen(product_id: product.id)));
             },
           );
-        }, separatorBuilder: (BuildContext context, int index) {
-        return Divider(color: Colors.black);
-      },);
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return Divider(color: Colors.black);
+        },
+      );
     }
     return Container();
   }
 
   Future<void> fetchProducts() async {
     try {
-      final response = await http.get(
-          Uri.parse("https://fakestoreapi.com/products"));
+      final response =
+          await http.get(Uri.parse("https://fakestoreapi.com/products"));
       List<Product> result = Product.parseList(json.decode(response.body));
       print(result[0]);
       setState(() {
@@ -137,4 +161,3 @@ class _ProductScreenState extends State<ProductScreen> {
     }
   }
 }
-
