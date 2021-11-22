@@ -2,16 +2,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shoppo/cart_screen.dart';
 import 'product_detail_screen.dart';
 import 'category_screen.dart';
+import 'product_screen.dart';
 import 'profile_screen.dart';
+import 'dart:math';
 
-class ProductScreen extends StatefulWidget {
-  const ProductScreen({Key? key}) : super(key: key);
+class CartScreen extends StatefulWidget {
+  const CartScreen({Key? key}) : super(key: key);
 
   @override
-  _ProductScreenState createState() => _ProductScreenState();
+  _CartScreenState createState() => _CartScreenState();
 }
 
 class Product {
@@ -19,13 +20,10 @@ class Product {
   final String title;
   final String image;
 
-  // final Float price;
-
-  Product(this.id, this.title, this.image /*, this.price*/);
+  Product(this.id, this.title, this.image);
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-        json["id"], json["title"], json["image"] /*, json["price"]*/);
+    return Product(json["id"], json["title"], json["image"]);
   }
 
   static List<Product> parseList(List<dynamic> list) {
@@ -33,21 +31,24 @@ class Product {
   }
 }
 
-class _ProductScreenState extends State<ProductScreen> {
+class _CartScreenState extends State<CartScreen> {
   late List<Product> productsData;
+  var productInfo;
 
   @override
   void initState() {
     super.initState();
     productsData = [];
-    fetchProducts();
+    productInfo = {};
+    fetchCartProducts();
+    // fetchProducts();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Products'),
+        title: Text('Cart Products'),
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 16.0, top: 8.0),
@@ -130,7 +131,7 @@ class _ProductScreenState extends State<ProductScreen> {
 
   Widget getBody() {
     if (productsData.isEmpty) {
-      print("productData is empty");
+      print("cart data is empty");
     } else {
       return ListView.separated(
         itemCount: productsData == null ? 0 : productsData.length,
@@ -154,14 +155,30 @@ class _ProductScreenState extends State<ProductScreen> {
     return Container();
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchCartProducts() async {
+    //get cart of random user
+    Random random = new Random();
+    int userId = random.nextInt(3);
+
     try {
-      final response =
-          await http.get(Uri.parse("https://fakestoreapi.com/products"));
-      List<Product> result = Product.parseList(json.decode(response.body));
-      setState(() {
-        productsData = result;
-      });
+      final response = await http
+          .get(Uri.parse("https://fakestoreapi.com/carts/user/${userId}"));
+
+      final List<Product> cart_products = [];
+
+      final products = json.decode(response.body)[0]["products"];
+      for (var i = 0; i < products.length; i++) {
+        final single_product_response = await http.get(Uri.parse(
+            "https://fakestoreapi.com/products/${products[i]["productId"]}"));
+
+        var productJson = json.decode(single_product_response.body);
+        Product product = Product.fromJson(productJson);
+
+        cart_products.add(product);
+        setState(() {
+          productsData = cart_products;
+        });
+      }
     } catch (e) {
       throw Exception("Error in getting products");
     }

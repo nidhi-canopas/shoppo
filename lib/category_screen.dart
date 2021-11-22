@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shoppo/product_by_category_screen.dart';
+import 'cart_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({Key? key}) : super(key: key);
@@ -37,6 +39,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   ),
                 ],
               ),
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => CartScreen()));
+              },
             ),
           )
         ],
@@ -47,6 +53,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
           return Card(
             child: ListTile(
               title: Text(categoriesData[index]),
+              onTap: () {
+                // retrieve products by category
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ProductByCategoryScreen(
+                        category_name: categoriesData[index])));
+              },
             ),
           );
         },
